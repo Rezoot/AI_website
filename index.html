@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Czat z Ollamą</title>
+
+    <!-- Style CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            max-width: 800px;
+        }
+        .chat-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            min-height: 300px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user { color: #004488; }  /* Kolor wiadomości użytkownika */
+        .bot { color: #228800; }   /* Kolor wiadomości bota */
+        .error { color: red; margin-top: 10px; }  /* Styl błędów */
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+        }
+        #waiting {
+            display: none;
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Czat z Ollamą</h1>
+
+    <!-- Pole z wiadomościami -->
+    <div class="chat-box">
+        {% for msg in messages %}
+            <div class="message">
+                <!-- Oznaczenie, czy wiadomość pochodzi od użytkownika czy bota -->
+                <strong class="{{ 'user' if msg.role == 'user' else 'bot' }}">
+                    {{ "Ty" if msg.role == 'user' else "Bot" }}:
+                </strong>
+                <!-- Treść wiadomości (zabezpieczona przez |e) -->
+                {{ msg.content | e }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Formularz wysyłania wiadomości -->
+    <form method="post" id="chat-form">
+        <input type="text" name="message" maxlength="{{ char_limit }}" autocomplete="off" placeholder="Wpisz wiadomość..." required>
+        <button type="submit">Wyślij</button>
+    </form>
+
+    <!-- Komunikat oczekiwania na odpowiedź -->
+    <div id="waiting">Czekaj... trwa generowanie odpowiedzi.</div>
+
+    <!-- Wyświetlenie błędów (np. za długa wiadomość) -->
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <!-- Skrypt JS: ukrywa formularz i pokazuje komunikat "Czekaj..." po wysłaniu -->
+    <script>
+        const form = document.getElementById("chat-form");
+        const waiting = document.getElementById("waiting");
+
+        form.addEventListener("submit", function () {
+            form.style.display = "none";
+            waiting.style.display = "block";
+        });
+    </script>
+</body>
+</html>
